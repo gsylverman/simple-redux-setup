@@ -1,25 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { connect, useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from 'redux';
+import { getMovies } from './store/actions/index'
 
-function App() {
+function App(props) {
+  useEffect(() => {
+    props.getMovies()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <HookComp />
+      {/* {
+        props.movies ? props.movies.map(item => (
+          <div key={item.id}>
+            {item.title}
+          </div>
+        )) :
+          null
+      } */}
     </div>
   );
 }
 
-export default App;
+const HookComp = () => {
+  // useDispatch & useSelector
+  const movies = useSelector(state => state.movies);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getMovies())
+  }, [dispatch])
+  
+  return (
+    <div>
+      {
+        movies ?
+          movies.map(item => (
+          <div key={item.id}>
+            {item.title}
+          </div>
+        )) :
+          null
+      }
+    </div>
+  );
+};
+
+const mapStateToProps = state => ({
+  movies: state.movies
+});
+
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({ getMovies }, dispatch)
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
